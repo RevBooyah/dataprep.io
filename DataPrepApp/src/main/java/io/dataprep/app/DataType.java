@@ -6,5 +6,7 @@ public enum DataType {
 	dpORDINAL, // values can matter. ex: 1 - small, 2 - medium, 3 - large
 	dpDOUBLE, // double float - aka CONTINUOUS
 	dpINTERVAL,
-	dpINTEGER
+	dpINTEGER,
+	dpDATE,
+	dpDATETIME
 }

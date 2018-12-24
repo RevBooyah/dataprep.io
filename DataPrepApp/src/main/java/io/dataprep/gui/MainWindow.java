@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -22,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
@@ -171,6 +173,15 @@ public class MainWindow {
 		mnFile.add(separator);
 		
 		JMenuItem mntmExit = new JMenuItem("Exit");
+	    mntmExit.setMnemonic(KeyEvent.VK_Q);
+	    mntmExit.setAccelerator(KeyStroke.getKeyStroke(
+	             KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
+	    mntmExit.setToolTipText("Exit application");
+	    mntmExit.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent event) {
+	            System.exit(0);
+	        }
+	    });
 		mnFile.add(mntmExit);
 		
 		JMenu mnHelp = new JMenu("Help");
@@ -191,7 +202,7 @@ public class MainWindow {
 			            fldFile.setText(" "+file.getAbsolutePath());
 			            dpf = new DPFile(file.getAbsolutePath());
 			            try {
-							dpf.readFullFile();
+							dpf.readBasicFileInfo();
 							fldRowsCols.setText(" "+dpf.getNumLines()+" x "+dpf.getNumColumns());
 							jHeadList.setListData(dpf.getHeaders());
 						} catch (IOException e1) {
@@ -206,8 +217,12 @@ public class MainWindow {
 		jHeadList.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if(e.getButton()==1) {
-					System.out.println(jHeadList.getSelectedIndex()+" was selected." );
 					updateDetails(jHeadList.getSelectedIndex());
+					try {
+						dpf.parseColumn(jHeadList.getSelectedIndex());
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
 				}
 			}
 		});
