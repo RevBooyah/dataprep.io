@@ -25,6 +25,7 @@ public class DPFile {
 	private String fullFileName; // includes full path
 	private String fileSize;
 	private long numLines;
+	private int numColumns;
 	
 	private String[] headers;
 	private String[] colTypes;
@@ -43,9 +44,11 @@ public class DPFile {
 	    	System.out.println("Fatal error.  Header line is required but is not available.");
 			return;
 	    }
+	    numColumns = headers.length;
 	    parseHeadline();
 	    numLines = countLines();
-	    System.out.println("Total Lines = "+numLines);
+	    
+	    System.out.println("Total Lines = "+numLines+"\nTotal Cols = "+numColumns);
 	    while ((nextLine = reader.readNext()) != null) {
 	        // nextLine[] is an array of values from the line
 	    	String fullLine = String.join(", ", nextLine);
