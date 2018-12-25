@@ -5,9 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.concurrent.ConcurrentMap;
-import java.util.stream.Collectors;
 
 import com.opencsv.CSVReader;
 
@@ -30,7 +27,7 @@ public class DPFile {
 	private int numColumns;
 	
 	private String[] headers;
-	private String[] colTypes;
+	private Column[] columns;
 	
 	
 	private final static int SAMPLE_ROWS=1000;
@@ -51,6 +48,7 @@ public class DPFile {
 	    numColumns = headers.length;
 	    parseHeadline();
 	    numLines = countLines();
+	    //columns = new Column[numColumns-1];
 	    
 	    /*
 	     * try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
@@ -78,18 +76,15 @@ public class DPFile {
 	    //TODO: if I keep with just sampling, add random space between samples instead of a "head -SAMPLE_SIZE"
 	    int x=0;
 	    while ((nextLine = reader.readNext()) != null) {
-	    	col[x++] = nextLine[idx].strip();
-	    	String fullLine = String.join(", ", nextLine);
+	    	col[x++] = nextLine[idx].trim();
+	    	//String fullLine = String.join(", ", nextLine);
 	        //System.out.println(fullLine );
 	    }
 		System.out.println("Column "+idx+" contains: "+String.join(" | ", col));
 		
-		ConcurrentMap<Object, Integer> uniq = Arrays.asList(col).parallelStream().
-			            collect(Collectors.toConcurrentMap(
-			                w -> w, w -> 1, Integer::sum));
-		uniq.keySet().stream().forEach(k-> {
-			System.out.println(k + " = "+uniq.get(k));
-		});
+		DataType dType = ColumnParse.determineColType(col);
+		
+		System.out.println("DATA TYPE FOR COL "+idx+" is "+dType);
 		int numInt = 0;
 		int numFloat = 0;
 		int numString = 0;
