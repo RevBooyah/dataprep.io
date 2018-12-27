@@ -1,57 +1,50 @@
 package io.dataprep.app;
 
 import java.util.Arrays;
-import java.util.Comparator;
+import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 public class ColumnParse {
 
-	private final static String INT_REGEX = "[+-]?\\d+";
-	private final static String FLOAT_REGEX = "[+-]?[0-9]+(\\.[0-9]+)?([Ee][+-]?[0-9]+)?";
-	private final static String AMPM_TIME_REGEX = "(1[012]|[1-9]):[0-5][0-9](\\s)?(?i)(am|pm)"; // 12 hour format
-	private final static String TIME_REGEX = "([01]?[0-9]|2[0-3]):[0-5][0-9]"; //24 hour format
-	private final static String DURATION_REGEX = "\\d[:\\d\\.]+"; 
-	
+	private static final int FUNC_REGEX = 0;
 	
 	public static DataType determineColType(String[] col) {
 		DataType dType = DataType.dpSTRING; // default type is dpSTRING
-		ConcurrentMap<Object, Integer> uniq = Arrays.asList(col).parallelStream()
+		ConcurrentMap<Object, Integer> uniq = Arrays.asList(col)
+				.parallelStream()
 				.collect(Collectors.toConcurrentMap(w -> w, w -> 1, Integer::sum));
+		
+		// how many different values
+		int numDifferent = uniq.size();
+		System.out.println("THere are "+numDifferent+" different values.");
+		
 		uniq.keySet().stream().forEach(k -> {
 			System.out.println(k + " = " + uniq.get(k));
 		});
 		
-		Integer basicType = (Integer) uniq.keySet().stream().map(k->getBasicType((String) k)).max(Comparator.comparing(Integer::valueOf)).get();
-		
-		switch(basicType) {
-		case 1:
-			dType = DataType.dpINTEGER;
-			break;
-		case 2:
-			dType = DataType.dpDOUBLE;
-			break;
-		case 3:
-		default:
-			dType = DataType.dpSTRING;
-			break;
-		}
-		
+		// TODO(steve): filter empty string here or before?
+		ConcurrentMap<DataType,Integer> thash = uniq.keySet().parallelStream().map(s->guessDataType((String) s)) 
+				.collect(Collectors.toConcurrentMap(w -> w, w->1, Integer::sum));	
+		dType = Collections.max(thash.entrySet(), Map.Entry.comparingByValue()).getKey();
+		//System.out.println("THASH: "+thash);
+		//ConcurrentMap<DataType,Integer> thash = uniq.keySet().stream().map(k->getBasicType((String) k)).max(Comparator.comparing(Integer::valueOf)).get();
 		return dType;
 	}
 	
-	
-	private static Integer getBasicType(String s) {
-		if( s.matches(INT_REGEX) ) {
-			return DataType.dpINTEGER.getId();
-		}
-		if( s.matches(FLOAT_REGEX)) {
-			return DataType.dpDOUBLE.getId();
-		}
-		
-		
-		return DataType.dpSTRING.getId();
+	private static DataType guessDataType(String s) {
+		DataType out = Arrays.stream(DataType.values()).filter(x->x.getFunc()==FUNC_REGEX).filter(x->s.matches(x.getRegex())).findFirst().get();
+		//System.out.println("DT("+out.getId()+") = "+out.name());
+		if(out == DataType.dpSTRING) out = guessSpecificType(s);
+		return out;
 	}
+	
+	private static DataType guessSpecificType(String s) {
+		DataType out = DataType.dpSTRING;
+		return out;
+	}
+	
 	
 	
 }

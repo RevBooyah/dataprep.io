@@ -85,10 +85,7 @@ public class DPFile {
 		DataType dType = ColumnParse.determineColType(col);
 		
 		System.out.println("DATA TYPE FOR COL "+idx+" is "+dType);
-		int numInt = 0;
-		int numFloat = 0;
-		int numString = 0;
-		
+			
 		
 				
 		
