@@ -29,6 +29,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 
+import io.dataprep.app.Column;
 import io.dataprep.app.DPFile;
 
 public class MainWindow {
@@ -216,10 +217,12 @@ public class MainWindow {
 		});
 		jHeadList.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
+				Column col = new Column();
 				if(e.getButton()==1) {
 					updateDetails(jHeadList.getSelectedIndex());
 					try {
-						dpf.parseColumn(jHeadList.getSelectedIndex());
+						col = dpf.parseColumn(jHeadList.getSelectedIndex());
+						textField.setText(col.getDpType().getReadable());
 					} catch (IOException e1) {
 						e1.printStackTrace();
 					}

@@ -48,7 +48,7 @@ public class DPFile {
 	    numColumns = headers.length;
 	    parseHeadline();
 	    numLines = countLines();
-	    //columns = new Column[numColumns-1];
+	    columns = new Column[numColumns];
 	    
 	    /*
 	     * try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
@@ -58,36 +58,44 @@ public class DPFile {
 	}
 	
 
-	public void parseColumn(int idx) throws IOException {
+	public Column parseColumn(int idx) throws IOException {
 		@SuppressWarnings("resource")
 		CSVReader reader = new CSVReader(new FileReader(fullFileName));
-	    String [] nextLine;
+	    String [] line;
 	    long lcnt = numLines -1;
 	    if(lcnt > Integer.MAX_VALUE) {
 	    	System.out.println("Too many rows for current DataPrep version. Unlimited coming soon...");
-	    	return;	    	
+	    	return null;	    	
 	    }
 	    int numSamples = (lcnt<SAMPLE_ROWS)?(int)lcnt:SAMPLE_ROWS;
 	    
 	    String[] col = new String[numSamples];
-	    
+	    System.out.println("Num samples: "+numSamples);
 	    reader.readNext(); // ignore header.
 	    
 	    //TODO: if I keep with just sampling, add random space between samples instead of a "head -SAMPLE_SIZE"
 	    int x=0;
-	    while ((nextLine = reader.readNext()) != null) {
-	    	col[x++] = nextLine[idx].trim();
+	    while ((line = reader.readNext()) != null) {
+	    	//System.out.println("Next Line: "+nextLine);
+	    	col[x] = line[idx].trim();
 	    	//String fullLine = String.join(", ", nextLine);
-	        //System.out.println(fullLine );
+	        //System.out.println(x+" "+fullLine );
+	        x++;
 	    }
 		System.out.println("Column "+idx+" contains: "+String.join(" | ", col));
 		
 		DataType dType = ColumnParse.determineColType(col);
 		
+		columns[idx] = new Column();
+		columns[idx].setDpType(dType);
+		columns[idx].setColumnNumber(idx);
+		columns[idx].setName(headers[idx]);
+		columns[idx].setNumBlank(0);
+		
 		System.out.println("DATA TYPE FOR COL "+idx+" is "+dType);
 			
 		
-				
+		return columns[idx];
 		
 	}
 	
@@ -110,26 +118,35 @@ public class DPFile {
 
 	        // make it easy for the optimizer to tune this loop
 	        long count = 0;
+	        int tmpcnt = 0;
 	        while (readChars == 1024) {
 	            for (int i=0; i<1024;) {
 	                if (c[i++] == '\n') {
 	                    ++count;
+	                    //tmpcnt=0;
+	                } else {
+	                	//tmpcnt++;
 	                }
+	                
 	            }
 	            readChars = is.read(c);
 	        }
-
+	        
 	        // count remaining characters
+	        tmpcnt=0;
 	        while (readChars != -1) {
-	            System.out.println(readChars);
+	            //System.out.println("READCHARS: "+readChars);
 	            for (int i=0; i<readChars; ++i) {
 	                if (c[i] == '\n') {
 	                    ++count;
+	                    tmpcnt=0;
+	                } else {
+	                	tmpcnt++;
 	                }
 	            }
 	            readChars = is.read(c);
 	        }
-
+	        if(tmpcnt>0) count++;
 	        return count == 0 ? 1 : count;
 	    } finally {
 	        is.close();

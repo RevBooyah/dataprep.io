@@ -11,7 +11,7 @@ public class ColumnParse {
 	private static final int FUNC_REGEX = 0;
 	
 	public static DataType determineColType(String[] col) {
-		DataType dType = DataType.dpSTRING; // default type is dpSTRING
+		DataType dType = DataType.STRING; // default type is dpSTRING
 		ConcurrentMap<Object, Integer> uniq = Arrays.asList(col)
 				.parallelStream()
 				.collect(Collectors.toConcurrentMap(w -> w, w -> 1, Integer::sum));
@@ -28,7 +28,7 @@ public class ColumnParse {
 		ConcurrentMap<DataType,Integer> thash = uniq.keySet().parallelStream().map(s->guessDataType((String) s)) 
 				.collect(Collectors.toConcurrentMap(w -> w, w->1, Integer::sum));	
 		dType = Collections.max(thash.entrySet(), Map.Entry.comparingByValue()).getKey();
-		//System.out.println("THASH: "+thash);
+		System.out.println("THASH: "+thash);
 		//ConcurrentMap<DataType,Integer> thash = uniq.keySet().stream().map(k->getBasicType((String) k)).max(Comparator.comparing(Integer::valueOf)).get();
 		return dType;
 	}
@@ -36,12 +36,12 @@ public class ColumnParse {
 	private static DataType guessDataType(String s) {
 		DataType out = Arrays.stream(DataType.values()).filter(x->x.getFunc()==FUNC_REGEX).filter(x->s.matches(x.getRegex())).findFirst().get();
 		//System.out.println("DT("+out.getId()+") = "+out.name());
-		if(out == DataType.dpSTRING) out = guessSpecificType(s);
+		if(out == DataType.STRING) out = guessSpecificType(s);
 		return out;
 	}
 	
 	private static DataType guessSpecificType(String s) {
-		DataType out = DataType.dpSTRING;
+		DataType out = DataType.STRING;
 		return out;
 	}
 	
