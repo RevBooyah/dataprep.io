@@ -1,15 +1,17 @@
 package io.dataprep.app;
 
-import lombok.Data;
-
-@Data
-public class Column {
-
-	private DataType dpType;
-	private String name; // from the header
-	private int columnNumber;
-	private long numBlank;
+public interface Column {
 	
-	// each type will extend this type.
+	DataType getDpType();
+	void setDpType(DataType dt);
+	
+	String getName();
+	void setName(String name);
+	
+	int getColumnNumber();
+	void setColumnNumber(int idx);
+	
+	long getNumBlank();
+	void setNumBlank(int idx);
 	
 }

@@ -31,6 +31,7 @@ import javax.swing.border.LineBorder;
 
 import io.dataprep.app.Column;
 import io.dataprep.app.DPFile;
+import io.dataprep.types.DpString;
 
 public class MainWindow {
 
@@ -217,7 +218,7 @@ public class MainWindow {
 		});
 		jHeadList.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				Column col = new Column();
+				Column col = new DpString();
 				if(e.getButton()==1) {
 					updateDetails(jHeadList.getSelectedIndex());
 					try {

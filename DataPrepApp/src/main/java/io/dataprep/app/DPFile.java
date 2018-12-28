@@ -8,6 +8,9 @@ import java.io.InputStream;
 
 import com.opencsv.CSVReader;
 
+import io.dataprep.types.DpDouble;
+import io.dataprep.types.DpInteger;
+import io.dataprep.types.DpString;
 import lombok.Data;
 
 /**
@@ -86,12 +89,29 @@ public class DPFile {
 		
 		DataType dType = ColumnParse.determineColType(col);
 		
-		columns[idx] = new Column();
-		columns[idx].setDpType(dType);
-		columns[idx].setColumnNumber(idx);
-		columns[idx].setName(headers[idx]);
-		columns[idx].setNumBlank(0);
+		Column cls = new DpString();
+		//cls = Class.forName(dType.getClassName()).newInstance();
+		switch(dType) {
+			case STRING:
+				cls = new DpString();
+				break;
+			case INTEGER:
+				cls = new DpInteger();
+				break;
+			case DOUBLE:
+				cls = new DpDouble();
+				
+			default:
+				cls = new DpString();
+				break;
+		}
 		
+		cls.setDpType(dType);
+		cls.setColumnNumber(idx);
+		cls.setName(headers[idx]);
+		cls.setNumBlank(0);
+		
+		columns[idx] = cls;
 		System.out.println("DATA TYPE FOR COL "+idx+" is "+dType);
 			
 		
@@ -152,4 +172,16 @@ public class DPFile {
 	        is.close();
 	    }
 	}
+	
+	/*
+	public static String ucFirst(String s) {
+		if (s == null || s.length() <= 0) return s;
+		char[] chars = new char[1];
+		s.toLowerCase().getChars(0, 1, chars, 0);
+   
+	    StringBuilder sb = new StringBuilder(s.length());
+	    sb.append(Character.toUpperCase(chars[0]));
+	    sb.append(s.toCharArray(), 1, s.length()-1);
+	    return sb.toString();
+	} */
 }
