@@ -5,8 +5,20 @@ import io.dataprep.app.Column;
 
 
 public class DpBoolean extends AbstractColumn implements Column {
-	
-	
-	
 
+	@Override
+	public void fullColumnParse(String[] fullRawColumn) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void convertColumn(String[] rawCol) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
+	
+	
 }

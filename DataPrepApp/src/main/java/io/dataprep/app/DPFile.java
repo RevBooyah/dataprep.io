@@ -2,6 +2,7 @@ package io.dataprep.app;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -87,7 +88,10 @@ public class DPFile {
 	    }
 		System.out.println("Column "+idx+" contains: "+String.join(" | ", col));
 		
-		DataType dType = ColumnParse.determineColType(col);
+		ColumnParse cp = new ColumnParse();
+		
+		DataType dType = cp.determineColType(col);
+		
 		
 		Column cls = new DpString();
 		//cls = Class.forName(dType.getClassName()).newInstance();
@@ -110,6 +114,11 @@ public class DPFile {
 		cls.setColumnNumber(idx);
 		cls.setName(headers[idx]);
 		cls.setNumBlank(0);
+		cls.setNumUnique(cp.getNumUnique());
+		
+		// I'm doing the full parse separate from this initial parse, in preparation for 
+		//   when the type parsing becomes a sample instead of full column read.
+		cls.fullColumnParse(getFullRawColumn(idx,numLines,false));
 		
 		columns[idx] = cls;
 		System.out.println("DATA TYPE FOR COL "+idx+" is "+dType);
@@ -124,6 +133,49 @@ public class DPFile {
 		System.out.println(String.join(" , ", headers));
 		
 	}
+	
+	
+	/**
+	 * Get the full column as Strings.
+	 * @param idx  The index of the column (starts with 0 col)
+	 * @param maxLines The maximum lines to return. 0 = all.
+	 * @param doSample If true, takes a random sampling from the full column
+	 * @return
+	 * @throws IOException
+	 */
+	public String[] getFullRawColumn(int idx, long maxLines, boolean doSample) throws IOException {
+		if(maxLines> Integer.MAX_VALUE || numLines > Integer.MAX_VALUE) {
+			//TODO(steve): Convert this to a log message and a popup for the gui.
+			System.out.println("WARNING: Too many lines for this version of DataPrep.io software.");
+		}
+		
+		int lcnt = (int)numLines;
+		if(maxLines>0 && maxLines<numLines) {
+			lcnt = (int) maxLines;
+		}
+		
+		String[] col = new String[lcnt];
+		
+		@SuppressWarnings("resource")
+		CSVReader reader = new CSVReader(new FileReader(fullFileName));
+	    String [] line;
+	    
+	    reader.readNext(); // ignore header.
+	    int x=0;
+	    while ((line = reader.readNext()) != null && x<lcnt) {
+	    	col[x] = line[idx].trim();
+	        x++;
+	    }
+	    
+	    if(doSample) {
+	    	//TODO(steve): write random sample code (also need to add check at top to get numLines always, and maxlines sample)
+	    	System.out.println("NOTE: The sampling section is not complete yet.");
+	    }
+	    
+		return col;
+	}
+	
+	
 	
 	private long countLines() throws IOException {
 	    InputStream is = new BufferedInputStream(new FileInputStream(fullFileName));

@@ -43,6 +43,7 @@ public class MainWindow {
 	private JTextField fldSelectedCol;
 	private JTextField textField;
 	private DPFile dpf;
+	private JTextField textUnique;
 	
 	
 	/**
@@ -162,6 +163,17 @@ public class MainWindow {
 		textField.setBounds(393, 8, 165, 20);
 		panel.add(textField);
 		
+		textUnique = new JTextField();
+		textUnique.setEditable(false);
+		textUnique.setColumns(10);
+		textUnique.setBounds(101, 36, 149, 20);
+		panel.add(textUnique);
+		
+		JLabel lblUniqueVals = new JLabel("Unique Values");
+		lblUniqueVals.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblUniqueVals.setBounds(10, 39, 81, 14);
+		panel.add(lblUniqueVals);
+		
 		JMenuBar menuBar = new JMenuBar();
 		frmDataprepio.setJMenuBar(menuBar);
 		
@@ -208,7 +220,6 @@ public class MainWindow {
 							fldRowsCols.setText(" "+dpf.getNumLines()+" x "+dpf.getNumColumns());
 							jHeadList.setListData(dpf.getHeaders());
 						} catch (IOException e1) {
-							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
 			        } else {
@@ -220,10 +231,12 @@ public class MainWindow {
 			public void mouseClicked(MouseEvent e) {
 				Column col = new DpString();
 				if(e.getButton()==1) {
-					updateDetails(jHeadList.getSelectedIndex());
+					fldSelectedCol.setText(dpf.getHeaders()[jHeadList.getSelectedIndex()]);
 					try {
 						col = dpf.parseColumn(jHeadList.getSelectedIndex());
 						textField.setText(col.getDpType().getReadable());
+						textUnique.setText(""+col.getNumUnique());
+						updatePanel(col);
 					} catch (IOException e1) {
 						e1.printStackTrace();
 					}
@@ -233,9 +246,9 @@ public class MainWindow {
 			
 	}
 	
-	private void updateDetails(int idx) {
-		fldSelectedCol.setText(dpf.getHeaders()[idx]);
-		
-		
+	private void updatePanel(Column col) {
+		//TODO: update the panel based on the column object type. 
 	}
+	
+	
 }

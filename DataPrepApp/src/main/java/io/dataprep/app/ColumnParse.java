@@ -6,23 +6,29 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
+import lombok.Data;
+import lombok.ToString;
+
+@Data
+@ToString
 public class ColumnParse {
 
 	private static final int FUNC_REGEX = 0;
+	private int numUnique;
 	
-	public static DataType determineColType(String[] col) {
+	public DataType determineColType(String[] col) {
 		DataType dType = DataType.STRING; // default type is dpSTRING
 		ConcurrentMap<Object, Integer> uniq = Arrays.asList(col)
 				.parallelStream()
 				.collect(Collectors.toConcurrentMap(w -> w, w -> 1, Integer::sum));
 		
 		// how many different values
-		int numDifferent = uniq.size();
-		System.out.println("THere are "+numDifferent+" different values.");
+		numUnique = uniq.size();
+		//System.out.println("THere are "+numDifferent+" different values.");
 		
-		uniq.keySet().stream().forEach(k -> {
-			System.out.println(k + " = " + uniq.get(k));
-		});
+		//uniq.keySet().stream().forEach(k -> {
+		//	System.out.println(k + " = " + uniq.get(k));
+		//});
 		
 		// TODO(steve): filter empty string here or before?
 		ConcurrentMap<DataType,Integer> thash = uniq.keySet().parallelStream().map(s->guessDataType((String) s)) 
