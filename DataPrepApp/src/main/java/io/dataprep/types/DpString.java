@@ -2,7 +2,11 @@ package io.dataprep.types;
 
 import io.dataprep.app.AbstractColumn;
 import io.dataprep.app.Column;
+import lombok.Data;
+import lombok.ToString;
 
+@ToString(callSuper = true)
+@Data
 public class DpString extends AbstractColumn implements Column {
 
 	@Override

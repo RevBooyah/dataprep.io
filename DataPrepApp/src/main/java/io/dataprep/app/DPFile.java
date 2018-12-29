@@ -80,7 +80,6 @@ public class DPFile {
 	    //TODO: if I keep with just sampling, add random space between samples instead of a "head -SAMPLE_SIZE"
 	    int x=0;
 	    while ((line = reader.readNext()) != null) {
-	    	//System.out.println("Next Line: "+nextLine);
 	    	col[x] = line[idx].trim();
 	    	//String fullLine = String.join(", ", nextLine);
 	        //System.out.println(x+" "+fullLine );
@@ -154,7 +153,7 @@ public class DPFile {
 			lcnt = (int) maxLines;
 		}
 		
-		String[] col = new String[lcnt];
+		String[] col = new String[lcnt-1];
 		
 		@SuppressWarnings("resource")
 		CSVReader reader = new CSVReader(new FileReader(fullFileName));

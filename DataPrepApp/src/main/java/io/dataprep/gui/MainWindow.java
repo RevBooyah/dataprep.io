@@ -9,6 +9,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -44,6 +46,7 @@ public class MainWindow {
 	private JTextField textField;
 	private DPFile dpf;
 	private JTextField textUnique;
+	public JPanel panel;
 	
 	
 	/**
@@ -134,7 +137,7 @@ public class MainWindow {
 		button.setBounds(97, 452, 98, 21);
 		frmDataprepio.getContentPane().add(button);
 		
-		JPanel panel = new JPanel();
+		panel = new JPanel();
 		panel.setForeground(Color.GRAY);
 		panel.setBorder(new LineBorder(Color.GRAY, 1, true));
 		panel.setBounds(284, 71, 584, 370);
@@ -247,7 +250,37 @@ public class MainWindow {
 	}
 	
 	private void updatePanel(Column col) {
-		//TODO: update the panel based on the column object type. 
+		
+		System.out.println("COLUMN: "+col.getDetails());
+		HashMap<String, Object> c = col.getDetails();
+		int cnt = c.size();
+		JTextField[] jtf = new JTextField[cnt];
+		JLabel[] jlbl = new JLabel[cnt];
+		
+		int x = 0;
+		int cury = 39+28;
+		Iterator<?> it = c.keySet().iterator();
+		while(it.hasNext()) {
+			String k = (String) it.next();
+			System.out.println("IT: "+k.toString()+" => "+c.get(k));
+			jlbl[x] = new JLabel(k.toString());
+			jlbl[x].setHorizontalAlignment(SwingConstants.RIGHT);
+			jlbl[x].setBounds(10, cury, 81, 14);
+			panel.add(jlbl[x]);
+			
+			
+			jtf[x] = new JTextField();
+			jtf[x].setEditable(false);
+			jtf[x].setColumns(10);
+			jtf[x].setBounds(101, cury-3, 149, 20);
+			jtf[x].setText(c.get(k).toString());
+			panel.add(jtf[x]);
+			
+			x++;
+			cury = cury + 28;
+		}
+		panel.revalidate();
+		panel.repaint();
 	}
 	
 	
