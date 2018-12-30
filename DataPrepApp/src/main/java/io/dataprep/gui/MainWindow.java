@@ -34,6 +34,7 @@ import javax.swing.border.LineBorder;
 import io.dataprep.app.Column;
 import io.dataprep.app.DPFile;
 import io.dataprep.types.DpString;
+import java.awt.Font;
 
 public class MainWindow {
 
@@ -47,6 +48,8 @@ public class MainWindow {
 	private DPFile dpf;
 	private JTextField textUnique;
 	public JPanel panel;
+	JTextField[] jtf;
+	JLabel[] jlbl;
 	
 	
 	/**
@@ -140,42 +143,52 @@ public class MainWindow {
 		panel = new JPanel();
 		panel.setForeground(Color.GRAY);
 		panel.setBorder(new LineBorder(Color.GRAY, 1, true));
-		panel.setBounds(284, 71, 584, 370);
+		panel.setBounds(284, 71, 260, 370);
 		frmDataprepio.getContentPane().add(panel);
 		panel.setLayout(null);
 		
-		JLabel lblColumn = new JLabel("Column");
+		JLabel lblColumn = new JLabel("Column:");
+		lblColumn.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblColumn.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblColumn.setBounds(10, 11, 81, 14);
 		panel.add(lblColumn);
 		
 		fldSelectedCol = new JTextField();
+		fldSelectedCol.setForeground(Color.BLACK);
+		fldSelectedCol.setFont(new Font("Tahoma", Font.BOLD, 12));
 		fldSelectedCol.setEditable(false);
 		fldSelectedCol.setBounds(101, 8, 149, 20);
+		fldSelectedCol.setBorder(new LineBorder(Color.LIGHT_GRAY,0));
 		panel.add(fldSelectedCol);
 		fldSelectedCol.setColumns(10);
-		
-		JLabel lblColumnType = new JLabel("Column Type");
-		lblColumnType.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblColumnType.setBounds(303, 11, 80, 14);
-		panel.add(lblColumnType);
+		lblColumn.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		
 		textField = new JTextField();
 		textField.setEditable(false);
 		textField.setColumns(10);
-		textField.setBounds(393, 8, 165, 20);
+		textField.setBounds(101, 36, 148, 20);
+
+		textField.setBorder(new LineBorder(Color.LIGHT_GRAY,0));
 		panel.add(textField);
 		
 		textUnique = new JTextField();
 		textUnique.setEditable(false);
 		textUnique.setColumns(10);
-		textUnique.setBounds(101, 36, 149, 20);
+		textUnique.setBounds(101, 64, 149, 20);
+		textUnique.setBorder(new LineBorder(Color.LIGHT_GRAY,0));
 		panel.add(textUnique);
 		
-		JLabel lblUniqueVals = new JLabel("Unique Values");
+		JLabel lblUniqueVals = new JLabel("Unique Values:");
+		lblUniqueVals.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		lblUniqueVals.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblUniqueVals.setBounds(10, 39, 81, 14);
+		lblUniqueVals.setBounds(10, 67, 81, 14);
 		panel.add(lblUniqueVals);
+		
+		JLabel lblDataType = new JLabel("Data Type:");
+		lblDataType.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblDataType.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		lblDataType.setBounds(10, 39, 81, 14);
+		panel.add(lblDataType);
 		
 		JMenuBar menuBar = new JMenuBar();
 		frmDataprepio.setJMenuBar(menuBar);
@@ -251,21 +264,37 @@ public class MainWindow {
 	
 	private void updatePanel(Column col) {
 		
+		if(jtf!=null && jtf.length>0) {
+			for(JTextField j: jtf) {
+				panel.remove(j);
+			}
+		}
+		
+		if(jlbl != null && jlbl.length>0 ) {
+			for(JLabel j: jlbl) {
+				panel.remove(j);
+			}
+		}
+		panel.revalidate();
+		panel.repaint();
+		if(col.getDetails()==null) return;
+		
 		System.out.println("COLUMN: "+col.getDetails());
 		HashMap<String, Object> c = col.getDetails();
 		int cnt = c.size();
-		JTextField[] jtf = new JTextField[cnt];
-		JLabel[] jlbl = new JLabel[cnt];
+		
+		jtf = new JTextField[cnt];
+		jlbl = new JLabel[cnt];
 		
 		int x = 0;
-		int cury = 39+28;
+		int cury = 39+28+28;
 		Iterator<?> it = c.keySet().iterator();
 		while(it.hasNext()) {
 			String k = (String) it.next();
-			System.out.println("IT: "+k.toString()+" => "+c.get(k));
-			jlbl[x] = new JLabel(k.toString());
+			jlbl[x] = new JLabel(k.toString()+":");
 			jlbl[x].setHorizontalAlignment(SwingConstants.RIGHT);
 			jlbl[x].setBounds(10, cury, 81, 14);
+			jlbl[x].setFont(new Font("Tahoma", Font.PLAIN, 11));
 			panel.add(jlbl[x]);
 			
 			
@@ -274,6 +303,8 @@ public class MainWindow {
 			jtf[x].setColumns(10);
 			jtf[x].setBounds(101, cury-3, 149, 20);
 			jtf[x].setText(c.get(k).toString());
+
+			jtf[x].setBorder(new LineBorder(Color.LIGHT_GRAY,0));
 			panel.add(jtf[x]);
 			
 			x++;

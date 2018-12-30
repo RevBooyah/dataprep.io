@@ -26,7 +26,8 @@ public class DpInteger extends AbstractColumn implements Column {
 		details.put("Max", stats.getMax());
 		details.put("Avg", stats.getAverage());
 		details.put("Sum", stats.getSum());
-		details.put("numBlank", (fullRawColumn.length - values.length));
+		details.put("Empty Rows", (fullRawColumn.length - values.length));
+		details.put("Std. Dev.", stdev());
 	}
 	
 	
@@ -36,5 +37,19 @@ public class DpInteger extends AbstractColumn implements Column {
 	
 	private void genStats() {
 		stats = Arrays.stream(values).collect(Collectors.summarizingInt(Integer::intValue));
-	}
+	} 
+	
+	private double stdev(){
+        double mean = 0.0;
+        double num=0.0;
+        double numi = 0.0;
+        if(stats==null | stats.getSum()==0) genStats();
+        if(values.length<1) return 0.0; // no div by zero
+        mean = stats.getSum()/(double)values.length;
+        for (Integer i : values) {
+            numi = Math.pow(((double) i - mean), 2);
+            num = num + numi;
+        }
+        return Math.sqrt(num/values.length);
+    }
 }
